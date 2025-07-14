@@ -69,7 +69,7 @@ if (move_uploaded_file($_FILES['meme']['tmp_name'], $targetPath)) {
         $title = $data['title'] ?? 'Untitled meme';
         $user = $_SESSION['uid'];
 
-        $sql = "INSERT INTO memes (user_id, filename, timestamp, title, category) VALUES (?, ?, NOW(), ?, 'fresh')";
+        $sql = "INSERT INTO memes (user_id, filename, timestamp, title, category) VALUES (?, ?, NOW(), ?, 'Fresh')";
 
         dbQuery($sql, [$user, $publicPath, $title]);
 
