@@ -25,6 +25,7 @@ $user = $_SESSION['uid'];
 
 $sql = "SELECT
             m.*,
+            r.title,
             SUM(r.type = 'Like') AS like_count,
             SUM(r.type = 'Upvote') AS upvote_count,
             SUM(r.type = 'Share'), AS share_countc,
