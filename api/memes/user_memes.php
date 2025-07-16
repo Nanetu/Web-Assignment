@@ -25,17 +25,21 @@ $user = $_SESSION['uid'];
 
 $sql = "SELECT
             m.*,
-            r.title,
-            SUM(r.type = 'Like') AS like_count,
-            SUM(r.type = 'Upvote') AS upvote_count,
-            SUM(r.type = 'Share'), AS share_countc,
-            SUM(r.type = 'Download') AS download_count
+            m.title,
+            COALESCE(SUM(r.type = 'Like'), 0) AS like_count,
+            COALESCE(SUM(r.type = 'Upvote'), 0) AS upvote_count,
+            COALESCE(COUNT(s.share_id), 0) AS share_count,
+            COALESCE(COUNT(d.download_id), 0) AS download_count
         FROM 
             memes m
         LEFT JOIN 
             reactions r on m.meme_id = r.meme_id
+        LEFT JOIN 
+            downloads d ON m.meme_id = d.meme_id
+        LEFT JOIN 
+            shares s ON m.meme_id = s.meme_id
         WHERE 
-            m.meme_id = ?
+            m.user_id = ?
         GROUP BY
             m.meme_id
 ";

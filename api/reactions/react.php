@@ -2,8 +2,8 @@
 
 session_start();
 
-require_once __DIR__ . '/../../utils/database.php';
-require_once __DIR__ . '/../../utils/tendCount.php';
+require_once __DIR__.'/../../utils/database.php';
+require_once __DIR__.'/../../utils/tendCount.php';
 
 header('Content-Type: application/json');
 

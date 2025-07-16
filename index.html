@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZedMemes - Enhanced Meme Sharing</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="public/css/styles.css">
+    <script src="public/js/app.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar custom-navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/Users/TMB COMPUTERS/Downloads/ZedMemes/joel.html">
+                <img src="/Users/TMB COMPUTERS/Downloads/ZedMemes/zmlogoBlack.png" alt="ZedMemes Logo">
+            </a>
+            
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <div class="buttons">
+                        <button class="button is-light uploadBtn">
+                            <i class="fas fa-upload mr-2"></i> Upload
+                        </button>
+                        
+                        <button class="button is-light loginBtn">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Login
+                        </button>
+                        
+                        <div class="profile-container" style="position: relative;">
+                            <button class="profile-btn" style="display: none;">
+                                <div class="image">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </button>
+                            <div class="profile-dropdown">
+                                <a href="#" class="myPostsBtn">
+                                    <i class="fas fa-images"></i> My Posts
+                                </a>
+                                <a href="#">
+                                    <i class="fas fa-chart-line"></i> Statistics
+                                </a>
+                                <div class="divider"></div>
+                                <a href="#" class="logoutBtn">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero hero-section is-small">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <h1 class="title is-1">
+                    Share the Funniest Memes
+                </h1>
+                <button class="button is-primary is-medium is-rounded uploadBtn" style="background: var(--warning);">
+                    <img src="/Users/TMB COMPUTERS/Downloads/ZedMemes/zmlogo.png" alt="ZedMemes" style="width: 40px; margin-right: 4px;"> Upload Your Meme
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div id="uploadNotice" class="upload-notice">
+                <i class="fas fa-info-circle mr-2"></i> Please login to upload memes
+            </div>
+            
+            <!-- Meme Grid -->
+            <h2 class="section-title">Trending Memes</h2>
+            <div class="columns is-multiline" id="memeContainer">
+                <!-- Memes will be populated by JavaScript -->
+            </div>
+            
+            <!-- Load More Button -->
+            <div class="load-more-container">
+                <button id="loadMoreBtn" class="load-more-btn" style="background: var(--success);">
+                    <i class="fas fa-plus-circle"></i> Load More Memes
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Meme View Modal -->
+    <div class="modal" id="memeModal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <button class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-card-body">
+                <div class="modal-title" id="modalTitle"></div>
+                <img src="" alt="Meme" class="modal-img" id="modalImage">
+                <div class="content p-4">
+                    <div class="meme-stats is-justify-content-center">
+                        <div class="stat-item like-btn">
+                            <i class="fas fa-heart"></i>
+                            <span id="modalLikes">0</span>
+                        </div>
+                        <div class="stat-item upvote-btn">
+                            <i class="fas fa-arrow-up"></i>
+                            <span id="modalUpvotes">0</span>
+                        </div>
+                        <div class="stat-item share-btn">
+                            <i class="fas fa-retweet"></i>
+                            <span id="modalShares">0</span>
+                        </div>
+                        <div class="stat-item download-btn">
+                            <i class="fas fa-download"></i>
+                            <span id="modalDownloads">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Login/Signup Modal -->
+    <div class="modal auth-modal" id="authModal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Login</div>
+                <div class="auth-tab" data-tab="signup">Sign Up</div>
+            </div>
+            <div class="auth-body">
+                <!-- Login Form -->
+                <div class="auth-form active" id="loginForm">
+                    <div class="field">
+                        <label class="label">Email</label>
+                        <div class="control">
+                            <input class="input" type="email" id="loginEmail" placeholder="Enter your email">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Password</label>
+                        <div class="control">
+                            <input class="input" type="password" id="loginPassword" placeholder="Enter your password">
+                        </div>
+                    </div>
+                    <button class="auth-btn" id="loginBtn" style="background: var(--success);">Login</button>
+                </div>
+                
+                <!-- Signup Form -->
+                <div class="auth-form" id="signupForm">
+                    <div class="field">
+                        <label class="label">Full Name</label>
+                        <div class="control">
+                            <input class="input" type="text" id="signupName" placeholder="Enter your full name">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Email</label>
+                        <div class="control">
+                            <input class="input" type="email" id="signupEmail" placeholder="Enter your email">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Password</label>
+                        <div class="control">
+                            <input class="input" type="password" id="signupPassword" placeholder="Create a password">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Confirm Password</label>
+                        <div class="control">
+                            <input class="input" type="password" id="signupConfirm" placeholder="Confirm your password">
+                        </div>
+                    </div>
+                    <button class="auth-btn" id="signupBtn" style="background: var(--success);">Create Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upload Modal -->
+    <div class="modal upload-modal" id="uploadModal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <button class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="auth-header">
+                <h2 class="title is-2 has-text-white">Upload Your Meme</h2>
+                <p class="subtitle is-5 has-text-light">Share your creativity with the community</p>
+            </div>
+            <div class="auth-body">
+                <div class="field">
+                    <label class="label">Meme Title</label>
+                    <div class="control">
+                        <input class="input" type="text" id="memeTitle" placeholder="Enter a catchy title">
+                    </div>
+                </div>
+                
+                <div class="field">
+                    <label class="label">Upload Image</label>
+                    <div class="file has-name is-fullwidth">
+                        <label class="file-label">
+                            <input class="file-input" type="file" id="memeFile" accept="image/*">
+                            <span class="file-cta">
+                                <span class="file-icon">
+                                    <i class="fas fa-upload"></i>
+                                </span>
+                                <span class="file-label">
+                                    Choose a file…
+                                </span>
+                            </span>
+                            <span class="file-name" id="fileName">
+                                No file selected
+                            </span>
+                        </label>
+                    </div>
+                    <img id="imagePreview" class="image-preview" alt="Image preview">
+                </div>
+                
+                <div class="field">
+                    <label class="label">Category</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select id="memeCategory">
+                                <option>Funny</option>
+                                <option>Tech</option>
+                                <option>Animals</option>
+                                <option>Gaming</option>
+                                <option>Movies</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="auth-btn" id="submitMemeBtn">
+                    <i class="fas fa-upload mr-2"></i> Upload Meme
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>MADE BY FWEBENE</p>
+            <p>&copy; 2025 ZedMemes. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

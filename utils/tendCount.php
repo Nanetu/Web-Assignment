@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../../utils/database.php';
+require_once __DIR__.'/database.php';
 
 function calculateTrend($time, $likes, $upvotes, $shares, $downloads) {
     $now = new DateTime();
@@ -20,7 +20,7 @@ function calculateTrend($time, $likes, $upvotes, $shares, $downloads) {
         return 'Viral';
     }
 
-    return 'Fresh';
+    return 'Other';
 }
 
 function memeCount($meme_id){
