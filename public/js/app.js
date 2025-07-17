@@ -131,7 +131,29 @@ document.addEventListener('DOMContentLoaded', () => {
     window.fetchAllMemes = fetchAllMemes;
 
     // Render memes function
-    // Replace the renderMemes function with this corrected version
+
+    function getFriendlyDate(timestamp) {
+    const memeDate = new Date(timestamp.replace(' ', 'T')); // Force ISO
+    const now = new Date();
+    const diffMs = now - memeDate;
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHours = Math.floor(diffMin / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffSec < 60) return "Just now";
+    if (diffMin < 60) return `${diffMin} minute${diffMin === 1 ? '' : 's'} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays} days ago`;
+    
+    // For older dates, show exact date
+    return memeDate.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+
+
+    
 function renderMemes(filterByUser = false, memesList = []) {
     container.innerHTML = "";
     showingMyPosts = filterByUser;
@@ -160,36 +182,41 @@ function renderMemes(filterByUser = false, memesList = []) {
     memesToShow.forEach((meme) => {
         const card = document.createElement("div");
         card.className = "column is-4-desktop is-6-tablet is-12-mobile meme-column";
-        card.innerHTML = `
-        <div class="meme-card">
-            <div class="card-image">
-                <figure class="image">
-                    <img src="${meme.filename}" alt="${meme.title}" class="meme-img">
-                </figure>
-            </div>
-            <div class="meme-content">
-                <p class="meme-title">${meme.title}</p>
-                <div class="meme-stats">
-                    <div class="stat-item like-btn ${meme.user_liked ? 'has-text-danger' : ''}">
-                        <i class="fas fa-heart"></i>
-                        <span>${meme.like_count}</span>
-                    </div>
-                    <div class="stat-item upvote-btn ${meme.user_upvoted ? 'has-text-warning' : ''}">
-                        <i class="fas fa-arrow-up"></i>
-                        <span>${meme.upvote_count}</span>
-                    </div>
-                    <div class="stat-item share-btn">
-                        <i class="fas fa-retweet"></i>
-                        <span>${meme.share_count}</span>
-                    </div>
-                    <div class="stat-item download-btn">
-                        <i class="fas fa-download"></i>
-                        <span>${meme.download_count}</span>
-                    </div>
+        const uploadDate = getFriendlyDate(meme.timestamp);
+const uploader = ` ${meme.username}`;
+
+card.innerHTML = `
+    <div class="meme-card">
+        <div class="card-image">
+            <figure class="image">
+                <img src="${meme.filename}" alt="${meme.title}" class="meme-img">
+            </figure>
+        </div>
+        <div class="meme-content">
+            <p class="meme-title">${meme.title}</p>
+            <p class="meme-meta">Posted by ${uploader} - ${uploadDate}</p>
+            <div class="meme-stats">
+                <div class="stat-item like-btn ${meme.user_liked ? 'has-text-danger' : ''}">
+                    <i class="fas fa-heart"></i>
+                    <span>${meme.like_count}</span>
+                </div>
+                <div class="stat-item upvote-btn ${meme.user_upvoted ? 'has-text-warning' : ''}">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>${meme.upvote_count}</span>
+                </div>
+                <div class="stat-item share-btn">
+                    <i class="fas fa-retweet"></i>
+                    <span>${meme.share_count}</span>
+                </div>
+                <div class="stat-item download-btn">
+                    <i class="fas fa-download"></i>
+                    <span>${meme.download_count}</span>
                 </div>
             </div>
         </div>
-    `;
+    </div>
+`;
+
 
         // Track user's current reaction state for this meme
         let userLiked = meme.user_liked || false;
@@ -651,7 +678,19 @@ function renderMemes(filterByUser = false, memesList = []) {
             loginBtn.style.display = "flex";
             profileBtn.style.display = "none";
             dropdown.classList.remove("active");
-            if (showingMyPosts) renderMemes(false);
+
+            // Mimic the Home button behavior
+            showingMyPosts = false;
+            visibleMemes = 6;
+            document.querySelector(".section-title").textContent = "Trending Memes";
+
+            if (navbarBurger && navbarMenu) {
+                navbarBurger.classList.remove('is-active');
+                navbarMenu.classList.remove('is-active');
+            }
+
+            fetchAllMemes();
+
             showNotification("Successfully logged out", "info");
         } else {
             showNotification("Failed to logout", "warning");
@@ -662,6 +701,7 @@ function renderMemes(filterByUser = false, memesList = []) {
         showNotification("Logout error occurred", "danger");
     });
 });
+
 
 
 
