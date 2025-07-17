@@ -1,87 +1,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    const homeBtn = document.getElementById('homeBtn');
-
-homeBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    // Reset state
-    showingMyPosts = false;
-    visibleMemes = 6;
-
-    // Reset Section Title
-    document.querySelector(".section-title").textContent = "Trending Memes";
-
-    // Close mobile menu if open
-    if (navbarBurger && navbarMenu) {
-        navbarBurger.classList.remove('is-active');
-        navbarMenu.classList.remove('is-active');
-    }
-
-    // Close profile dropdown if open
-    if (dropdown) {
-        dropdown.classList.remove("active");
-    }
-
-    // Refetch memes from backend
-    fetchAllMemes();
-});
-
-// Helper Function
-function fetchAllMemes() {
-    container.innerHTML = `
-        <div class="column is-12 has-text-centered" style="padding: 3rem;">
-            <div class="spinner"></div>
-            <p>Loading memes...</p>
-        </div>
-    `;
-
-    fetch("api/memes/list.php")
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                renderMemes(false, data.memes);
-            } else {
-                container.innerHTML = `
-                    <div class="column is-12 has-text-centered" style="padding: 3rem;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #ff6b6b; margin-bottom: 1rem;"></i>
-                        <h3 class="title is-3">Error Loading Memes</h3>
-                        <p>${data.message || 'Something went wrong'}</p>
-                    </div>
-                `;
-            }
-        })
-        .catch(err => {
-            console.error("Could not fetch memes from backend:", err);
-            container.innerHTML = `
-                <div class="column is-12 has-text-centered" style="padding: 3rem;">
-                    <i class="fas fa-wifi" style="font-size: 4rem; color: #ff6b6b; margin-bottom: 1rem;"></i>
-                    <h3 class="title is-3">Connection Error</h3>
-                    <p>Could not load memes. Please check your connection and try again.</p>
-                    <button class="button is-primary" onclick="fetchAllMemes()">Retry</button>
-                </div>
-            `;
-        });
-}
-
-// Expose fetchAllMemes globally so "Retry" works
-window.fetchAllMemes = fetchAllMemes;
-
-    
-
-    const memes = []; // This will hold the memes fetched from the backend
-
-    fetch("api/memes/list.php")
-        .then(res => res.json())
-        .then(memes => {
-            if (memes.success) {
-                renderMemes(false, memes.memes);
-            }
-        })
-        .catch(err => {
-            console.error("Could not fetch memes from backend:", err);
-        });
 
 
     // DOM elements
@@ -115,9 +34,25 @@ window.fetchAllMemes = fetchAllMemes;
     const navbarMenu = document.querySelector('.navbar-menu');
     const loadMoreBtn = document.getElementById("loadMoreBtn");
     let loggedInUser = null;
+    //const homeBtn = document.querySelector(".navbar-item img"); 
     let showingMyPosts = false;
     let visibleMemes = 6; // Initial number of memes to show
     const memesPerLoad = 6; // Number of memes to load each time
+
+    
+
+    const memes = []; // This will hold the memes fetched from the backend
+
+    fetch("api/memes/list.php")
+        .then(res => res.json())
+        .then(memes => {
+            if (memes.success) {
+                renderMemes(false, memes.memes);
+            }
+        })
+        .catch(err => {
+            console.error("Could not fetch memes from backend:", err);
+        });
 
     // Mobile navbar toggle
     if (navbarBurger) {
@@ -126,6 +61,74 @@ window.fetchAllMemes = fetchAllMemes;
             navbarMenu.classList.toggle('is-active');
         });
     }
+
+    const homeBtn = document.getElementById('homeBtn');
+    
+    homeBtn.addEventListener('click', (e) => {
+        e.preventDefault(); // Prevent default link behavior
+        
+        // Reset view state
+        showingMyPosts = false;
+        visibleMemes = 6; // Reset to initial load amount
+        
+        // Update section title
+        document.querySelector(".section-title").textContent = "Trending Memes";
+        
+        // Close mobile menu if open
+        if (navbarBurger && navbarMenu) {
+            navbarBurger.classList.remove('is-active');
+            navbarMenu.classList.remove('is-active');
+        }
+        
+        // Close profile dropdown if open
+        if (dropdown) {
+            dropdown.classList.remove("active");
+        }
+        
+        // Fetch and render all memes
+        fetchAllMemes();
+    });
+
+    // Create a reusable function for fetching all memes
+    function fetchAllMemes() {
+        // Show loading state (optional)
+        container.innerHTML = `
+            <div class="column is-12 has-text-centered" style="padding: 3rem;">
+                <div class="spinner"></div>
+                <p>Loading memes...</p>
+            </div>
+        `;
+
+        fetch("api/memes/list.php")
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    renderMemes(false, data.memes);
+                } else {
+                    container.innerHTML = `
+                        <div class="column is-12 has-text-centered" style="padding: 3rem;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #ff6b6b; margin-bottom: 1rem;"></i>
+                            <h3 class="title is-3">Error Loading Memes</h3>
+                            <p>${data.message || 'Something went wrong'}</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(err => {
+                console.error("Could not fetch memes from backend:", err);
+                container.innerHTML = `
+                    <div class="column is-12 has-text-centered" style="padding: 3rem;">
+                        <i class="fas fa-wifi" style="font-size: 4rem; color: #ff6b6b; margin-bottom: 1rem;"></i>
+                        <h3 class="title is-3">Connection Error</h3>
+                        <p>Could not load memes. Please check your connection and try again.</p>
+                        <button class="button is-primary" onclick="fetchAllMemes()">Retry</button>
+                    </div>
+                `;
+            });
+    }
+
+    // Make fetchAllMemes available globally for the retry button
+    window.fetchAllMemes = fetchAllMemes;
 
     // Render memes function
     // Replace the renderMemes function with this corrected version
