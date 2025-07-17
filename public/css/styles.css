@@ -400,29 +400,67 @@
         }
         
         /* Upload Modal */
-        .upload-modal .modal-content {
-            max-width: 600px;
-        }
-        
-        .file-cta {
-            background: #f0f5ff;
-            border-color: #ddd;
-        }
-        
-        .file-label:hover .file-cta {
-            background: #e6eeff;
-        }
-        
-        .image-preview {
-            width: 100%;
-            max-height: 300px;
-            object-fit: contain;
-            display: none;
-            margin-top: 1rem;
-            border-radius: 8px;
-            border: 1px dashed #ddd;
-            padding: 0.5rem;
-        }
+        /* Upload Modal */
+.upload-modal .modal-content {
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh; /* Limit height to viewport */
+    overflow-y: auto; /* Enable scrolling if content is too tall */
+    margin: 0 auto;
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    position: relative;
+}
+
+.upload-modal .auth-body {
+    max-height: calc(90vh - 200px); /* Account for header/footer */
+    overflow-y: auto;
+}
+
+.file-cta {
+    background: #f0f5ff;
+    border-color: #ddd;
+}
+
+.file-label:hover .file-cta {
+    background: #e6eeff;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 200px; /* Reduced from 300px */
+    object-fit: contain;
+    display: none;
+    margin: 1rem auto 0;
+    border-radius: 8px;
+    border: 1px dashed #ddd;
+    padding: 0.5rem;
+}
+
+/* Ensure button stays visible */
+#submitMemeBtn {
+    margin-top: 1.5rem;
+    position: sticky;
+    bottom: 0;
+    background: #4a6cf7;
+    color: white;
+    width: 100%;
+    padding: 1rem;
+}
+
+/* Modal close button positioning */
+.upload-modal .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
         
         /* Notification */
         .notification {

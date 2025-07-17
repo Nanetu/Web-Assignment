@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,15 +10,16 @@
     <link rel="stylesheet" href="public/css/styles.css">
     <script src="public/js/app.js"></script>
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar custom-navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a class="navbar-item" href="/Users/TMB COMPUTERS/Downloads/ZedMemes/joel.html">
-                <img src="/Users/TMB COMPUTERS/Downloads/ZedMemes/zmlogoBlack.png" alt="ZedMemes Logo">
+            <a class="navbar-item" href="#" id="homeBtn">
+                <img src="public/assets/zmlogoBlack.png" alt="ZedMemes Logo">
             </a>
-            
-            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+                data-target="navbarBasicExample">
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
@@ -31,11 +33,11 @@
                         <button class="button is-light uploadBtn">
                             <i class="fas fa-upload mr-2"></i> Upload
                         </button>
-                        
+
                         <button class="button is-light loginBtn">
                             <i class="fas fa-sign-in-alt mr-2"></i> Login
                         </button>
-                        
+
                         <div class="profile-container" style="position: relative;">
                             <button class="profile-btn" style="display: none;">
                                 <div class="image">
@@ -69,7 +71,8 @@
                     Share the Funniest Memes
                 </h1>
                 <button class="button is-primary is-medium is-rounded uploadBtn" style="background: var(--warning);">
-                    <img src="/Users/TMB COMPUTERS/Downloads/ZedMemes/zmlogo.png" alt="ZedMemes" style="width: 40px; margin-right: 4px;"> Upload Your Meme
+                    <img src="public/assets/zmlogo.png" alt="ZedMemes" style="width: 40px; margin-right: 4px;"> Upload
+                    Your Meme
                 </button>
             </div>
         </div>
@@ -80,13 +83,13 @@
             <div id="uploadNotice" class="upload-notice">
                 <i class="fas fa-info-circle mr-2"></i> Please login to upload memes
             </div>
-            
+
             <!-- Meme Grid -->
             <h2 class="section-title">Trending Memes</h2>
             <div class="columns is-multiline" id="memeContainer">
                 <!-- Memes will be populated by JavaScript -->
             </div>
-            
+
             <!-- Load More Button -->
             <div class="load-more-container">
                 <button id="loadMoreBtn" class="load-more-btn" style="background: var(--success);">
@@ -95,7 +98,7 @@
             </div>
         </div>
     </section>
-    
+
     <!-- Meme View Modal -->
     <div class="modal" id="memeModal">
         <div class="modal-background"></div>
@@ -129,7 +132,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Login/Signup Modal -->
     <div class="modal auth-modal" id="authModal">
         <div class="modal-background"></div>
@@ -155,7 +158,7 @@
                     </div>
                     <button class="auth-btn" id="loginBtn" style="background: var(--success);">Login</button>
                 </div>
-                
+
                 <!-- Signup Form -->
                 <div class="auth-form" id="signupForm">
                     <div class="field">
@@ -187,7 +190,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Upload Modal -->
     <div class="modal upload-modal" id="uploadModal">
         <div class="modal-background"></div>
@@ -206,7 +209,7 @@
                         <input class="input" type="text" id="memeTitle" placeholder="Enter a catchy title">
                     </div>
                 </div>
-                
+
                 <div class="field">
                     <label class="label">Upload Image</label>
                     <div class="file has-name is-fullwidth">
@@ -227,7 +230,7 @@
                     </div>
                     <img id="imagePreview" class="image-preview" alt="Image preview">
                 </div>
-                
+
                 <div class="field">
                     <label class="label">Category</label>
                     <div class="control">
@@ -243,14 +246,14 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <button class="auth-btn" id="submitMemeBtn">
                     <i class="fas fa-upload mr-2"></i> Upload Meme
                 </button>
             </div>
         </div>
     </div>
-    
+
     <!-- Footer -->
     <footer class="footer">
         <div class="content has-text-centered">
@@ -266,4 +269,5 @@
     </footer>
 
 </body>
+
 </html>

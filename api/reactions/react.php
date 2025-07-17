@@ -25,8 +25,8 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST'){
 $user = $_SESSION['uid'];
 
 $data = json_decode(file_get_contents('php://input'), true);
-$meme_id = $data['memeId'] ?? null;
-$reaction = $data['reaction'] ?? null;
+$meme_id = $data['meme_id'] ?? null;
+$reaction = $data['type'] ?? null;
 
 if (!$reaction || !$meme_id) {
     http_response_code(400);
@@ -34,16 +34,28 @@ if (!$reaction || !$meme_id) {
     exit;
 }
 
-try{
-    $sql = "SELECT reactions_id FROM reactions WHERE meme_id = ? AND user_id = ?";
-    $existing = dbQuery($sql, [$meme_id, $user]);
-
-    if($existing) {
-        $sql = "UPDATE reactions SET type = ? WHERE meme_id = ? AND user_id = ?";
+try {
+    if ($reaction === 'RemoveLike') {
+        $sql = "DELETE FROM reactions WHERE meme_id = ? AND user_id = ? AND type = 'Like'";
+        dbQuery($sql, [$meme_id, $user]);
+        dbQuery("UPDATE memes SET like_count = GREATEST(like_count - 1, 0) WHERE meme_id = ?", [$meme_id]);
+    } elseif ($reaction === 'RemoveUpvote') {
+        $sql = "DELETE FROM reactions WHERE meme_id = ? AND user_id = ? AND type = 'Upvote'";
+        dbQuery($sql, [$meme_id, $user]);
+        dbQuery("UPDATE memes SET upvote_count = GREATEST(upvote_count - 1, 0) WHERE meme_id = ?", [$meme_id]);
     } else {
-        $sql = "INSERT INTO reactions (type, meme_id, user_id) VALUES (?, ?, ?)";
+        // Insert or update for Like / Upvote / Share / Download
+        $sql = "SELECT reactions_id FROM reactions WHERE meme_id = ? AND user_id = ?";
+        $existing = dbQuery($sql, [$meme_id, $user]);
+
+        if ($existing) {
+            $sql = "UPDATE reactions SET type = ? WHERE meme_id = ? AND user_id = ?";
+        } else {
+            $sql = "INSERT INTO reactions (type, meme_id, user_id) VALUES (?, ?, ?)";
+        }
+        dbQuery($sql, [$reaction, $meme_id, $user]);
     }
-    dbQuery($sql, [$reaction, $meme_id, $user]);
+
     updateMemeCategory($meme_id);
     echo json_encode(['success' => true, 'message' => 'Reaction updated successfully']);
 } catch (PDOException $e) {
