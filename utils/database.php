@@ -30,4 +30,24 @@ function dbQuery($sql, $params = []){
     }
 }
 
+function dbQueryInt($sql, $params = []) {
+    global $conn;
+    try {
+        $stmt = $conn->prepare($sql);
+
+        foreach ($params as $index => $value) {
+            $stmt->bindValue($index + 1, (int)$value, PDO::PARAM_INT);
+        }
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Database error (int bind): " . $e->getMessage());
+        return [];
+    }
+}
+
+
+
+
 ?>

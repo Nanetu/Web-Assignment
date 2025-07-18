@@ -1,7 +1,5 @@
 <?php
-
 session_start();
-
 require_once __DIR__.'/../../utils/database.php';
 
 header('Content-Type: application/json');
@@ -24,7 +22,16 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST'){
 
 $user = $_SESSION['uid'];
 
-$sql = "SELECT
+// Get pagination parameters
+$page = isset($_POST['page']) ? max(1, intval($_POST['page'])) : 1;
+$limit = isset($_POST['limit']) ? max(1, min(100, intval($_POST['limit']))) : 10; // Max 100, default 10
+$offset = ($page - 1) * $limit;
+
+// Get total count for this user's memes
+$countSql = "SELECT COUNT(DISTINCT m.meme_id) as total FROM memes m WHERE m.user_id = ?";
+
+// Main query with pagination
+$sql = "SELECT 
             m.*,
             m.title,
             COALESCE(SUM(r.type = 'Like'), 0) AS like_count,
@@ -41,15 +48,24 @@ $sql = "SELECT
             shares s ON m.meme_id = s.meme_id
         WHERE 
             m.user_id = ?
-        GROUP BY
+        GROUP BY 
             m.meme_id
-";
+        ORDER BY 
+            m.timestamp DESC
+        LIMIT ? OFFSET ?";
 
 try{
-    $memes = dbQuery($sql, [$user]);
+    // Get total count
+    $totalResult = dbQuery($countSql, [$user]);
+    $totalMemes = $totalResult[0]['total'];
+    $totalPages = ceil($totalMemes / $limit);
+    
+    // Get paginated memes
+    $memes = dbQueryInt($sql, [$user, $limit, $offset]);
+    
     echo json_encode([
-        'success'=>true,
-        'memes'=>$memes
+        'success' => true,
+        'memes' => $memes
     ]);
 } catch(Exception $e){
     http_response_code(500);
@@ -58,5 +74,4 @@ try{
         'error'=>'Fetch failed '.$e->getMessage()
     ]);
 }
-
 ?>

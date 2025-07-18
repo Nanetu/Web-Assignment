@@ -43,11 +43,14 @@ try {
     if($user && password_verify($password, $db_password)){
         session_start();
         $_SESSION['uid'] = $db_user;
+        $_SESSION['username'] = $name;
+        $_SESSION['email'] = $email;
+        $_SESSION['password'] = $db_password;
+
 
         echo json_encode([
             'success'=>true,
-            'user_id' => $db_user,
-            'username'=> $name
+            'session' => session_id()
         ]);
     } else {
         http_response_code(401);

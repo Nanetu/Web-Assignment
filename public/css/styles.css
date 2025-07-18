@@ -672,7 +672,7 @@
             
             /* White burger menu */
             .navbar-burger span {
-                background-color: white;
+                background-color: rgb(0, 0, 0);
                 height: 2px;
             }
             

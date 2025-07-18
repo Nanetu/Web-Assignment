@@ -52,7 +52,15 @@ try {
     $user = dbQuery("SELECT user_id FROM users WHERE email = ?", [$email]);
     if ($user) {
         $_SESSION['uid'] = $user[0]['user_id'];
-        echo json_encode(['success' => true, 'user_id' => $_SESSION['uid']]);
+        $_SESSION['username'] = $user[0]['username'];
+        $_SESSION['email'] = $user[0]['email'];
+        $_SESSION['password'] = $user[0]['password'];
+
+
+        echo json_encode([
+            'success'=>true,
+            'session' => session_id()
+        ]);
     } else {
         throw new Exception("User creation failed");
     }
