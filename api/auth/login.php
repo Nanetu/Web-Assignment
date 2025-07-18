@@ -43,6 +43,7 @@ try {
     if($user && password_verify($password, $db_password)){
         session_start();
         $_SESSION['uid'] = $db_user;
+<<<<<<< HEAD
         $_SESSION['username'] = $name;
         $_SESSION['email'] = $email;
         $_SESSION['password'] = $db_password;
@@ -51,6 +52,16 @@ try {
         echo json_encode([
             'success'=>true,
             'session' => session_id()
+=======
+        
+        //added username to sessions
+        $_SESSION['username'] = $name;
+
+        echo json_encode([
+            'success'=>true,
+            'user_id' => $db_user,
+            'username'=> $name
+>>>>>>> 6a3c37ff8f953f17bceeb5d8e09702bd96001db2
         ]);
     } else {
         http_response_code(401);

@@ -244,7 +244,7 @@
         
         .modal-content {
             position: relative;
-            background: white;
+            background: rgb(255, 0, 0);
             border-radius: 15px;
             overflow: hidden;
             max-width: 800px;
@@ -473,7 +473,7 @@
             z-index: 1000;
             transform: translateX(200%);
             transition: transform 0.3s ease;
-            color: white;
+            color: rgb(255, 0, 0);
         }
         
         .notification.show {
@@ -521,6 +521,162 @@
             max-width: 600px;
             display: none;
         }
+
+
+
+.delete-modal {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 9999;
+    }
+    .delete-modal-content {
+    background: white; padding: 20px; border-radius: 8px;
+    text-align: center;
+    }
+    .delete-modal-content button {
+      margin: 5px;
+    }
+
+    .delete-modal-content p {
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+        .delete-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      margin: 0 5px;
+    }
+    .delete-btn-danger {
+    background-color: #e74c3c;
+    color: white;
+    color: white;
+    border: none;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    }
+    .delete-btn-danger:hover {
+      background-color: #c0392b;
+    }
+    .delete-btn-cancel {
+    background-color: #bdc3c7;
+    color: black;
+    color: white;
+    border: none;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    }
+    .delete-btn-cancel:hover {
+      background-color: #95a5a6;
+    }
+
+
+
+
+
+
+    .edit-modal {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 9999;
+    }
+    .edit-modal-content {
+    background: white; padding: 20px; border-radius: 8px;
+    text-align: center;
+    }
+    .edit-modal-content button {
+      margin: 5px;
+    }
+
+    .edit-modal-content p {
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+        .edit-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      margin: 0 5px;
+    }
+    .edit-btn-danger {
+    background-color: #e74c3c;
+    color: white;
+    color: white;
+    border: none;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    }
+    .edit-btn-danger:hover {
+      background-color: #c0392b;
+    }
+    .edit-btn-cancel {
+    background-color: #bdc3c7;
+    color: black;
+    color: white;
+    border: none;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    }
+    .edit-btn-cancel:hover {
+      background-color: #95a5a6;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         /* Profile Dropdown */
         .profile-dropdown {
@@ -640,7 +796,7 @@
         @media (max-width: 768px) {
             .navbar-menu {
                 justify-content: center;
-                background: linear-gradient(135deg, var(--primary), var(--secondary));
+                /*background: linear-gradient(135deg, var(--primary), var(--secondary));*/
                 box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             }
             
@@ -649,7 +805,8 @@
             }
             
             .navbar-item .buttons {
-                flex-wrap: wrap;
+                flex-wrap: columns;
+                flex-direction: column-reverse;
                 justify-content: center;
                 gap: 0.8rem;
                 width: 100%;
@@ -672,7 +829,7 @@
             
             /* White burger menu */
             .navbar-burger span {
-                background-color: rgb(0, 0, 0);
+                background-color: gray;
                 height: 2px;
             }
             

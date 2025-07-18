@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
 
 
@@ -43,6 +42,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const memes = []; // This will hold the memes fetched from the backend
 
+
+    // check if user is in storage
+    fetch("api/auth/auth.php", {
+        credentials: 'include'
+    })
+    .then(res=> res.json())
+    .then(data =>{
+        console.log(data);
+        loggedInUser = data.user;
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('username', loggedInUser);
+        authModal.classList.remove("is-active");
+        uploadNotice.style.display = "none";
+        loginBtn.style.display = "none";
+        profileBtn.style.display = "flex";
+    })
+
+    
+    
+
+
     fetch("api/memes/list.php")
         .then(res => res.json())
         .then(memes => {
@@ -53,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(err => {
             console.error("Could not fetch memes from backend:", err);
         });
-
     // Mobile navbar toggle
     if (navbarBurger) {
         navbarBurger.addEventListener('click', () => {
@@ -131,7 +150,206 @@ document.addEventListener('DOMContentLoaded', () => {
     window.fetchAllMemes = fetchAllMemes;
 
     // Render memes function
-    // Replace the renderMemes function with this corrected version
+
+    function getFriendlyDate(timestamp) {
+    const memeDate = new Date(timestamp.replace(' ', 'T')); // Force ISO
+    const now = new Date();
+    const diffMs = now - memeDate;
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHours = Math.floor(diffMin / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffSec < 60) return "Just now";
+    if (diffMin < 60) return `${diffMin} minute${diffMin === 1 ? '' : 's'} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays} days ago`;
+    
+    // For older dates, show exact date
+    return memeDate.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+const deleteMeme = (meme_id) => {
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.id = 'confirmModal';
+    modal.className = 'delete-modal';
+
+    // Create modal content container
+    const modalContent = document.createElement('div');
+    modalContent.className = 'delete-modal-content';
+
+    // Create confirmation message
+    const message = document.createElement('p');
+    message.textContent = 'Are you sure you want to delete this meme?';
+
+    // Create confirm button
+    const confirmBtn = document.createElement('button');
+    confirmBtn.id = 'confirmDeleteBtn';
+    confirmBtn.className = 'btn delete-btn-danger';
+    confirmBtn.textContent = 'Yes, Delete';
+
+    // Create cancel button
+    const cancelBtn = document.createElement('button');
+    cancelBtn.id = 'cancelDeleteBtn';
+    cancelBtn.className = 'btn delete-btn-cancel';
+    cancelBtn.textContent = 'Cancel';
+
+    // Assemble the modal
+    modalContent.appendChild(message);
+    modalContent.appendChild(confirmBtn);
+    modalContent.appendChild(cancelBtn);
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    // Confirm button event listener
+    confirmBtn.addEventListener("click", () => {
+        fetch("api/memes/delete.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ meme_id }),
+            credentials: "include"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showNotification("Meme deleted successfully");
+                const memeCard = document.querySelector(`.meme-card[data-id="${meme_id}"]`);
+                if (memeCard) {
+                    memeCard.remove();
+                }
+                fetchAllMemes();
+            } else {
+                showNotification("Failed to delete meme");
+            }
+            closeModal();
+        })
+        .catch(error => {
+            console.error("Delete error:", error);
+            showNotification("Failed to delete meme", "danger");
+            closeModal();
+        });
+    });
+
+    // Cancel button event listener
+    cancelBtn.addEventListener("click", closeModal);
+
+    function closeModal() {
+        const modal = document.getElementById("confirmModal");
+        if (modal) {
+            modal.remove();
+        }
+    }
+}
+
+
+const editMeme = (meme_id) => {
+    // Create modal overlay
+    const modal = document.createElement('div');
+    modal.id = 'editModal';
+    modal.className = 'edit-modal';
+
+
+    // Modal inner content
+    const modalContent = document.createElement('div');
+    modalContent.className = 'edit-modal-content';
+
+    // Title message
+    const message = document.createElement('p');
+    message.textContent = 'Edit meme title?';
+    message.style.fontWeight = 'bold';
+    message.style.fontSize = '18px';
+
+    // Input field
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Enter new title';
+    input.style.padding = '10px';
+    input.style.marginTop = '10px';
+    input.style.width = '250px';
+    input.style.borderRadius = '5px';
+    input.style.border = '1px solid #ccc';
+
+    // Button container
+    const btnContainer = document.createElement('div');
+    btnContainer.style.display = 'flex';
+    btnContainer.style.justifyContent = 'space-between';
+    btnContainer.style.marginTop = '20px';
+    btnContainer.style.gap = '10px';
+
+    // Confirm button
+    const confirmBtn = document.createElement('button');
+    confirmBtn.id = 'confirmEditBtn';
+    confirmBtn.textContent = 'Save';
+    confirmBtn.style.flex = '1';
+    confirmBtn.style.padding = '10px';
+    confirmBtn.style.backgroundColor = '#4CAF50';
+    confirmBtn.style.color = 'white';
+    confirmBtn.style.border = 'none';
+    confirmBtn.style.borderRadius = '5px';
+    confirmBtn.style.cursor = 'pointer';
+
+    // Cancel button
+    const cancelBtn = document.createElement('button');
+    cancelBtn.id = 'cancelEditBtn';
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.style.flex = '1';
+    cancelBtn.style.padding = '10px';
+    cancelBtn.style.backgroundColor = '#f44336';
+    cancelBtn.style.color = 'white';
+    cancelBtn.style.border = 'none';
+    cancelBtn.style.borderRadius = '5px';
+    cancelBtn.style.cursor = 'pointer';
+
+    // Assemble
+    btnContainer.appendChild(confirmBtn);
+    btnContainer.appendChild(cancelBtn);
+    modalContent.appendChild(message);
+    modalContent.appendChild(input);
+    modalContent.appendChild(btnContainer);
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    // Event handlers
+    confirmBtn.addEventListener("click", () => {
+        fetch("api/memes/edit.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ meme_id, title: input.value }),
+            credentials: "include"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showNotification("Meme updated successfully");
+                fetchAllMemes();
+            } else {
+                showNotification("Failed to update meme");
+            }
+            closeModal();
+        })
+        .catch(error => {
+            console.error("Edit error:", error);
+            showNotification("Failed to update meme", "danger");
+            closeModal();
+        });
+    });
+
+    cancelBtn.addEventListener("click", closeModal);
+
+    function closeModal() {
+        const modal = document.getElementById("editModal");
+        if (modal) {
+            modal.remove();
+        }
+    }
+};
+
+
+
+
+    
 function renderMemes(filterByUser = false, memesList = []) {
     container.innerHTML = "";
     showingMyPosts = filterByUser;
@@ -160,36 +378,44 @@ function renderMemes(filterByUser = false, memesList = []) {
     memesToShow.forEach((meme) => {
         const card = document.createElement("div");
         card.className = "column is-4-desktop is-6-tablet is-12-mobile meme-column";
-        card.innerHTML = `
-        <div class="meme-card">
-            <div class="card-image">
-                <figure class="image">
-                    <img src="${meme.filename}" alt="${meme.title}" class="meme-img">
-                </figure>
-            </div>
-            <div class="meme-content">
-                <p class="meme-title">${meme.title}</p>
-                <div class="meme-stats">
-                    <div class="stat-item like-btn ${meme.user_liked ? 'has-text-danger' : ''}">
-                        <i class="fas fa-heart"></i>
-                        <span>${meme.like_count}</span>
-                    </div>
-                    <div class="stat-item upvote-btn ${meme.user_upvoted ? 'has-text-warning' : ''}">
-                        <i class="fas fa-arrow-up"></i>
-                        <span>${meme.upvote_count}</span>
-                    </div>
-                    <div class="stat-item share-btn">
-                        <i class="fas fa-retweet"></i>
-                        <span>${meme.share_count}</span>
-                    </div>
-                    <div class="stat-item download-btn">
-                        <i class="fas fa-download"></i>
-                        <span>${meme.download_count}</span>
-                    </div>
+        const uploadDate = getFriendlyDate(meme.timestamp);
+const uploader = ` ${meme.username}`;
+
+card.innerHTML = `
+    <div class="meme-card">
+        <div class="card-image">
+            <figure class="image">
+                <img src="${meme.filename}" alt="${meme.title}" class="meme-img">
+            </figure>
+        </div>
+        <div class="meme-content">
+            <p class="meme-title">${meme.title}</p> <div> ${meme.username == loggedInUser ? '<div class="stat-item edit-btn"><i class="fas fa-edit"></i></div>' : ''}</div>
+            <p class="meme-meta">Posted by ${uploader} - ${uploadDate}</p>
+            <div class="meme-stats">
+                <div class="stat-item like-btn ${meme.user_liked ? 'has-text-danger' : ''}">
+                    <i class="fas fa-heart"></i>
+                    <span>${meme.like_count}</span>
+                </div>
+                <div class="stat-item upvote-btn ${meme.user_upvoted ? 'has-text-warning' : ''}">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>${meme.upvote_count}</span>
+                </div>
+                <div class="stat-item share-btn">
+                    <i class="fas fa-retweet"></i>
+                    <span>${meme.share_count}</span>
+                </div>
+                <div">
+                    ${meme.username == loggedInUser ? '<div class="stat-item delete-btn"><i class="fas fa-trash"></i></div>' : ''}
+                </div>
+                <div class="stat-item download-btn">
+                    <i class="fas fa-download"></i>
+                    <span>${meme.download_count}</span>
                 </div>
             </div>
         </div>
-    `;
+    </div>
+`;
+
 
         // Track user's current reaction state for this meme
         let userLiked = meme.user_liked || false;
@@ -208,6 +434,24 @@ function renderMemes(filterByUser = false, memesList = []) {
         // LIKE BUTTON
         const likeBtn = card.querySelector(".like-btn");
         const likeSpan = likeBtn.querySelector("span");
+
+        // DELETE BUTTON
+        const deleteBtn = card.querySelector(".delete-btn")
+        if (deleteBtn) {
+            deleteBtn.addEventListener("click", function(e) {
+                e.stopPropagation();
+                deleteMeme(meme.meme_id);
+            });
+        }
+
+        // EDIT BUTTON
+        const editBtn = card.querySelector(".edit-btn")
+        if(editBtn){
+            editBtn.addEventListener("click", function(e){
+                e.stopPropagation();
+                editMeme(meme.meme_id);
+            })
+        }
 
         likeBtn.addEventListener("click", async (e) => {
             e.stopPropagation();
@@ -651,7 +895,19 @@ function renderMemes(filterByUser = false, memesList = []) {
             loginBtn.style.display = "flex";
             profileBtn.style.display = "none";
             dropdown.classList.remove("active");
-            if (showingMyPosts) renderMemes(false);
+
+            // Mimic the Home button behavior
+            showingMyPosts = false;
+            visibleMemes = 6;
+            document.querySelector(".section-title").textContent = "Trending Memes";
+
+            if (navbarBurger && navbarMenu) {
+                navbarBurger.classList.remove('is-active');
+                navbarMenu.classList.remove('is-active');
+            }
+
+            fetchAllMemes();
+
             showNotification("Successfully logged out", "info");
         } else {
             showNotification("Failed to logout", "warning");
@@ -662,6 +918,7 @@ function renderMemes(filterByUser = false, memesList = []) {
         showNotification("Logout error occurred", "danger");
     });
 });
+
 
 
 
@@ -735,7 +992,7 @@ function renderMemes(filterByUser = false, memesList = []) {
     // Submit meme functionality
    submitMemeBtn.addEventListener('click', function () {
     const title = document.getElementById('memeTitle').value;
-    const category = document.getElementById('memeCategory').value;
+    // const category = document.getElementById('memeCategory').value; 
     const file = memeFileInput.files[0];
 
     if (!title) {
@@ -750,7 +1007,7 @@ function renderMemes(filterByUser = false, memesList = []) {
 
     const formData = new FormData();
     formData.append('title', title);
-    formData.append('category', category);
+    //formData.append('category', category);
     formData.append('meme', file);
 
     fetch("api/memes/upload.php", {
@@ -762,10 +1019,11 @@ function renderMemes(filterByUser = false, memesList = []) {
     .then(data => {
         if (data.success) {
             showNotification("Meme uploaded successfully!", "success");
+            fetchAllMemes();
             uploadModal.classList.remove("is-active");
 
             // Reset form
-            document.getElementById('memeCategory').value = 'Funny';
+            //document.getElementById('memeCategory').value = 'Funny';
             memeFileInput.value = '';
             fileNameSpan.textContent = 'No file selected';
             imagePreview.style.display = 'none';
@@ -782,6 +1040,9 @@ function renderMemes(filterByUser = false, memesList = []) {
         showNotification("Upload error.", "danger");
     });
 });
+
+
+
     // Notification function
     function showNotification(message, type) {
         const notification = document.createElement("div");
