@@ -36,6 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
     //const homeBtn = document.querySelector(".navbar-item img"); 
     let showingMyPosts = false;
     let visibleMemes = 6; // Initial number of memes to show
+    let currentPage = 1;
+    const memesPerPage = 6;
+    let totalMemes = 0;
+    let totalPages = 0;
+
+
     const memesPerLoad = 6; // Number of memes to load each time
 
     
@@ -50,24 +56,41 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(res=> res.json())
     .then(data =>{
         console.log(data);
-        loggedInUser = data.user;
+        if (data.loggedIn && data.user) {  // Changed from data.success to data.loggedIn
+        loggedInUser = data.user;       // This now gets the username directly
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('username', loggedInUser);
         authModal.classList.remove("is-active");
         uploadNotice.style.display = "none";
         loginBtn.style.display = "none";
         profileBtn.style.display = "flex";
+    } else {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('username');
+        loggedInUser = null;
+        loginBtn.style.display = "flex";
+        profileBtn.style.display = "none";
+    }
     })
 
     
     
 
 
-    fetch("api/memes/list.php")
+    fetch(`api/memes/list.php?page=${currentPage}&limit=${memesPerPage}`)
         .then(res => res.json())
         .then(memes => {
             if (memes.success) {
                 renderMemes(false, memes.memes);
+                totalMemes = memes.total_meme;
+                totalPages = memes.total_pages - currentPage;
+
+                // Load More Button Logic
+                if (totalMemes > memesPerPage && totalPages > 0) {
+                    loadMoreBtn.style.display = "block";
+                } else {
+                    loadMoreBtn.style.display = "none";
+                }
             }
         })
         .catch(err => {
@@ -88,7 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Reset view state
         showingMyPosts = false;
-        visibleMemes = 6; // Reset to initial load amount
+        visibleMemes = 6;
+        currentPage = 1;
+        memes.length = 0;
+
         
         // Update section title
         document.querySelector(".section-title").textContent = "Trending Memes";
@@ -118,11 +144,24 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        fetch("api/memes/list.php")
+        fetch(`api/memes/list.php?page=${currentPage}&limit=${memesPerPage}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
+                    if (currentPage === 1) {
+                        memes.length = 0;
+                    }
+                    memes.push(...data.memes);
                     renderMemes(false, data.memes);
+                    totalMemes = memes.total_meme;
+                    totalPages = memes.total_pages - currentPage;
+
+
+                    if (totalMemes > memesPerPage && totalPages > 0) {
+                        loadMoreBtn.style.display = "block";
+                    } else {
+                        loadMoreBtn.style.display = "none";
+                    }
                 } else {
                     container.innerHTML = `
                         <div class="column is-12 has-text-centered" style="padding: 3rem;">
@@ -214,7 +253,7 @@ const deleteMeme = (meme_id) => {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                showNotification("Meme deleted successfully");
+                showNotification("Meme deleted successfully", "success");
                 const memeCard = document.querySelector(`.meme-card[data-id="${meme_id}"]`);
                 if (memeCard) {
                     memeCard.remove();
@@ -322,7 +361,7 @@ const editMeme = (meme_id) => {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                showNotification("Meme updated successfully");
+                showNotification("Meme updated successfully", "success");
                 fetchAllMemes();
             } else {
                 showNotification("Failed to update meme");
@@ -760,7 +799,7 @@ card.innerHTML = `
         container.appendChild(card);
     });
 
-    loadMoreBtn.style.display = filtered.length > visibleMemes ? "block" : "none";
+    //loadMoreBtn.style.display = filtered.length > visibleMemes ? "block" : "none";
 }
 
 
@@ -769,13 +808,13 @@ card.innerHTML = `
 
     // Load more memes
     loadMoreBtn.addEventListener("click", () => {
-        visibleMemes += memesPerLoad;
-        renderMemes(showingMyPosts);
-        // Scroll to show new memes
-        setTimeout(() => {
-            loadMoreBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 300);
-    });
+    currentPage++;
+    fetchAllMemes();
+    setTimeout(() => {
+        loadMoreBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 300);
+});
+
 
     // Modal close functionality
     document.querySelectorAll(".modal-close, .modal-background").forEach(el => {
@@ -930,7 +969,7 @@ card.innerHTML = `
             return;
         }
 
-        fetch("api/memes/user_memes.php", {
+        fetch(`api/memes/user_memes.php?page=${currentPage}&limit=${memesPerPage}`, {
             method: "POST",
             credentials: "include"
         })

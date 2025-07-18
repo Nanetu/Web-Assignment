@@ -34,12 +34,15 @@ $countSql = "SELECT COUNT(DISTINCT m.meme_id) as total FROM memes m WHERE m.user
 $sql = "SELECT 
             m.*,
             m.title,
+            u.username,
             COALESCE(SUM(r.type = 'Like'), 0) AS like_count,
             COALESCE(SUM(r.type = 'Upvote'), 0) AS upvote_count,
             COALESCE(COUNT(s.share_id), 0) AS share_count,
             COALESCE(COUNT(d.download_id), 0) AS download_count
         FROM 
             memes m
+        LEFT JOIN 
+            users u ON m.user_id = u.user_id
         LEFT JOIN 
             reactions r on m.meme_id = r.meme_id
         LEFT JOIN 

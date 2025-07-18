@@ -25,6 +25,20 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             padding: 0.75rem 1.5rem;
         }
+
+        .custom-navbar.is-fixed-top {
+            background-color: rgba(255, 255, 255, 0.98);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        /* Prevent content from hiding behind fixed navbar */
+        body {
+            padding-top: 3.25rem; /* Adjust to match your navbar height */
+        }
         
         .custom-navbar .navbar-brand .title {
             color: white;
@@ -244,7 +258,7 @@
         
         .modal-content {
             position: relative;
-            background: rgb(255, 0, 0);
+            background: rgb(255, 255, 255);
             border-radius: 15px;
             overflow: hidden;
             max-width: 800px;
@@ -473,16 +487,29 @@
             z-index: 1000;
             transform: translateX(200%);
             transition: transform 0.3s ease;
-            color: rgb(255, 0, 0);
+            color: rgb(255, 255, 255);
         }
         
         .notification.show {
             transform: translateX(0);
         }
         
-        .notification.success { background: var(--success); }
-        .notification.warning { background: var(--warning); }
-        .notification.info { background: var(--info); }
+        .notification.success { 
+    background: var(--success); 
+    color: white;
+}
+.notification.warning { 
+    background: var(--warning); 
+    color: white;
+}
+.notification.info { 
+    background: var(--info); 
+    color: white;
+}
+.notification.danger { 
+    background: #dc3545; 
+    color: white;
+}
         
         /* Footer */
         .footer {
